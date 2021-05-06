@@ -13,6 +13,35 @@ class Deque {
     std::vector<T *> basket;
     static const size_t arr_sz = 10;
 
+    void recap(size_t capacity) {
+        if (cap == 0) {
+            cap = 3;
+            basket.resize(cap);
+            begining = iterator(basket, 1);
+            ending = iterator(basket, 1);
+            for (size_t i = 0; i < cap; ++i) {
+                basket[i] = reinterpret_cast<T *>(new char[arr_sz * sizeof(T)]);
+            }
+        } else {
+
+            begining.current += (arr_sz * capacity);
+            ending.current += arr_sz * capacity;
+            std::vector < T * > helper(3 * capacity);
+            for (size_t i = 0; i < capacity; ++i) {
+                helper[i] = reinterpret_cast<T *>(new char[arr_sz * sizeof(T)]);
+            }
+
+            for (size_t i = 0; i < capacity; ++i) {
+                helper[i + capacity] = basket[i];
+            }
+            for (size_t i = 0; i < capacity; ++i) {
+                helper[i + 2 * capacity] = reinterpret_cast<T *>(new char[arr_sz * sizeof(T)]);
+            }
+            basket = helper;
+            cap = 3 * capacity;
+        }
+    }
+
 public:
     template<bool Const>
     class c_iterator {
@@ -163,34 +192,6 @@ public:
         return *this;
     }
 
-    void recap(size_t capacity) {
-        if (cap == 0) {
-            cap = 3;
-            basket.resize(cap);
-            begining = iterator(basket, 1);
-            ending = iterator(basket, 1);
-            for (size_t i = 0; i < cap; ++i) {
-                basket[i] = reinterpret_cast<T *>(new char[arr_sz * sizeof(T)]);
-            }
-        } else {
-
-            begining.current += (arr_sz * capacity);
-            ending.current += arr_sz * capacity;
-            std::vector<T *> helper(3 * capacity);
-            for (size_t i = 0; i < capacity; ++i) {
-                helper[i] = reinterpret_cast<T *>(new char[arr_sz * sizeof(T)]);
-            }
-
-            for (size_t i = 0; i < capacity; ++i) {
-                helper[i + capacity] = basket[i];
-            }
-            for (size_t i = 0; i < capacity; ++i) {
-                helper[i + 2 * capacity] = reinterpret_cast<T *>(new char[arr_sz * sizeof(T)]);
-            }
-            basket = helper;
-            cap = 3 * capacity;
-        }
-    }
 
     T &operator[](size_t i) {
         return *(begining + i);
@@ -281,6 +282,11 @@ public:
             ++it;
         }
         --ending;
+    }
+    ~Deque(){
+        for (int i = 0 ; i < basket.size();++i){
+            delete[] basket[i];
+        }
     }
 };
 
