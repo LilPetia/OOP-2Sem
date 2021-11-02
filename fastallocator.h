@@ -14,7 +14,7 @@ public:
     static bucket *buckets;
     static std::vector<bucket *> freed;
     static size_t added;
-//  static int begin;
+
 
     bucket *add() {
 
@@ -130,8 +130,6 @@ private:
     Node *insert_node_before_emphty(Node *node_bound) {
         Node *node = alloc.allocate(1);
         ++sz;
-        //std::allocator_traits<typename std::allocator_traits<Allocator>::template rebind_alloc<Node>>::construct(alloc, node, node, node_bound->next);
-        //node->data = reinterpret_cast<T>(node->data);
         new(&(node->data)) T();
         node->next = node_bound;
         node->previous = node_bound->previous;
@@ -144,7 +142,7 @@ private:
     Node *insert_node_before(Node *node_bound, const T &value) {
         Node *node = alloc.allocate(1);
         ++sz;
-        new(&(node->data)) T(value);//////////////
+        new(&(node->data)) T(value);
         node->next = node_bound;
         node->previous = node_bound->previous;
         node_bound->previous->next = node;
@@ -248,7 +246,7 @@ public:
     template<bool Const>
     struct c_iterator {
         using iterator_category = std::bidirectional_iterator_tag;
-        using difference_type = std::ptrdiff_t;////////////
+        using difference_type = std::ptrdiff_t;
         using value_type = std::conditional_t<Const, const T, T>;;
         using pointer = value_type *;
         using reference = value_type &;
@@ -262,9 +260,6 @@ public:
             this->ptr = it.ptr;
         }
 
-        ~c_iterator() {
-            //~ptr;/////////////////////////////////////////////////
-        }
 
         c_iterator &operator++() {
             ptr = ptr->next;
@@ -274,7 +269,7 @@ public:
         c_iterator operator++(int) {
             c_iterator<Const> it(*this);
             ptr = ptr->next;
-            return it;//////////////
+            return it;
         }
 
         c_iterator &operator--() {
@@ -288,17 +283,14 @@ public:
         }
 
         pointer operator->() {
-            return &(ptr->data);////
-        }/*
-        reference operator&(){
-            return ptr->data;
-        }*/
+            return &(ptr->data);
+        }
         reference operator*() {
-            return (ptr->data);////////////////////////////////////////
+            return (ptr->data);
         }
 
         template<bool Another>
-        bool operator==(c_iterator<Another> another) {////?????doesnot work with &
+        bool operator==(c_iterator<Another> another) {
             return another.ptr == ptr;
         }
 
@@ -309,7 +301,7 @@ public:
 
         operator c_iterator<true>() const {
             return c_iterator<true>(
-                    this->ptr);///////??????????????????????????????????????????????????????????????????????????
+                    this->ptr);
         }
 
     };
